@@ -1,22 +1,17 @@
 from flask import Flask, render_template, url_for, request
-# import pandas as pd
 import re 
 import pickle
 import numpy as np
-from transformers import DistilBertTokenizer, TFDistilBertModel
-from transformers import  DistilBertConfig
-from sklearn.feature_extraction.text import CountVectorizer
-import tqdm
-import tensorflow as tf
+from numpy.random.mtrand import standard_cauchy
 
 
-distil_bert = 'distilbert-base-uncased'
-config = DistilBertConfig.from_pretrained(distil_bert, output_hidden_states=True)
-tokenizer = DistilBertTokenizer.from_pretrained(distil_bert)
-bert_model =  TFDistilBertModel.from_pretrained(distil_bert, config=config)
+standard_aspect = pickle.load(open('standard_aspect.pkl', 'rb'))
+standard_text = pickle.load(open('standard_text.pkl','rb'))
 
-encode = pickle.load(open('encode_instance.pkl', 'rb'))
-standard = pickle.load(open('standard.pkl','rb'))
+vectorize_aspect = pickle.load(open('vectorize_aspect.pkl', 'rb'))
+vectorize_text = pickle.load(open('vectorize_text.pkl','rb'))
+
+model = pickle.load(open('XGboost.pkl', 'rb'))
 
 def decontracted(phrase):
     phrase = re.sub(r"won't", "will not", phrase)
@@ -52,24 +47,21 @@ def predict():
 
         message = request.form['message']
         aspect = request.form['aspect']
-        # message = [message]
-        # aspect = [aspect]
+
         message = preprocess(message)
-        aspect = encode.transform([aspect]).toarray()
-        aspect = standard.transform(aspect)
-        e = tokenizer.encode(message)
-        input = tf.constant(e)[None, :]
-        output = bert_model(input)
-        output = tf.reshape(output[1][-1][0][0], [1, -1])
-        output = np.array(output).reshape(-1,768)
-        aspect = np.array(aspect).reshape(-1, 100)
-        final_test = np.hstack((output, aspect))
-        model = tf.keras.models.load_model('./final_model.h5')
-        prediction = model.predict(final_test)
-        my_prediction = np.argmax(prediction, axis=1)
+        aspect = preprocess(aspect)
+        message = vectorize_text.transform([message]).toarray()
+        message = standard_text.transform(message)
+
+        aspect = vectorize_aspect.transform([aspect]).toarray()
+        aspect = standard_aspect.transform(aspect)
+
+        final_test = np.hstack((message, aspect))
+        
+        my_prediction = model.predict(final_test)
+        prediction = model.predict_proba(final_test)
 
     return render_template('result.html',prediction = [my_prediction, prediction])
 
 if __name__ == '__main__':
 	app.run(debug=True)
-
