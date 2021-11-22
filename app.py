@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request
-# import pandas as pd
+import pandas as pd
 import re 
 import pickle
 import numpy as np
@@ -7,7 +7,7 @@ from transformers import DistilBertTokenizer, TFDistilBertModel
 from transformers import  DistilBertConfig
 from sklearn.feature_extraction.text import CountVectorizer
 import tqdm
-# import tensorflow as tf
+import tensorflow as tf
 
 
 distil_bert = 'distilbert-base-uncased'
@@ -58,14 +58,14 @@ def predict():
         aspect = encode.transform([aspect]).toarray()
         aspect = standard.transform(aspect)
         e = tokenizer.encode(message)
-        input = np.array(e).reshape(-1,1)
+        input = tf.constant(e)[None, :]
         output = bert_model(input)
-        output = output[1][-1][0][0]
+        output = tf.reshape(output[1][-1][0][0], [1, -1])
         output = np.array(output).reshape(-1,768)
         aspect = np.array(aspect).reshape(-1, 100)
         final_test = np.hstack((output, aspect))
-        model = pickle.load(open('Bert_SVM.pkl','rb'))
-        prediction = model.predict_proba(final_test)
+        model = tf.keras.models.load_model('./final_model.h5')
+        prediction = model.predict(final_test)
         my_prediction = np.argmax(prediction, axis=1)
 
     return render_template('result.html',prediction = [my_prediction, prediction])
