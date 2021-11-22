@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+	<header>
+		<div class="container">
+		<div id="brandname">
+			DL Model
+		</div>
+		<h2 style="text-align: center;">Sentiment Classification</h2>
+		
+	</div>
+	</header>
+	<h1 style="color:blue;font-size:50;text-align: center;"><b>Model Prediction</b></h1>
+	<div class="results">
+
+
+		
+	{% if prediction[0] == 1%}
+	<h2 style="color:red;text-align: center;">Class 1 (Neutral)</h2>
+	{% elif prediction[0] == 0%}
+	<h2 style="color:blue;text-align: center;">Class 0 (Negative) </h2>
+    {% elif prediction[0] == 2%}
+    <h2 style="color:green;text-align: center;">Class 2 (Positive) </h2>
+	{% endif %}
+	<p id="display-array"></p>
+	<script type="text/javascript">
+		// array to be displayed
+		var array = prediction[1];
+		// access the textContent of the HTML element and set it to the
+		// value of the array with each element seperated by a comma and a space
+  		document.getElementById("display-array").textContent = array.join(", ");
+		  document.write(array);
+	</script>
+	<h2 style="text-align: center;">Class Probabilities are {{prediction[1][0]}} </h2>
+	</div>
+
+</body>
+</html>
