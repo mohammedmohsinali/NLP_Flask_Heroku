@@ -11,7 +11,7 @@
 		<div id="brandname">
 			WELCOME!
 		</div>
-		<h2 style="text-align: center;">Sentiment Classification</h2>
+		<h2 style="text-align: center;">Fake News Deection</h2>
 		
 	</div>
 	</header>
@@ -21,11 +21,11 @@
 
 		
 	{% if prediction[0] == 1%}
-	<h2 style="color:red;text-align: center;">Class 1 (Neutral)</h2>
+	<h2 style="color:red;text-align: center;">Class 1 (Fake)</h2>
 	{% elif prediction[0] == 0%}
 	<h2 style="color:blue;text-align: center;">Class 0 (Negative) </h2>
     {% elif prediction[0] == 2%}
-    <h2 style="color:green;text-align: center;">Class 2 (Positive) </h2>
+    <h2 style="color:green;text-align: center;">Class 2 (Real) </h2>
 	{% endif %}
 	<p id="display-array"></p>
 	<script type="text/javascript">
