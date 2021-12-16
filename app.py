@@ -46,7 +46,7 @@ def predict():
     if request.method == 'POST':
 
         message = request.form['message']
-        aspect = request.form['aspect']
+        aspect = request.form['speaker']
 
         message = preprocess(message)
         aspect = preprocess(aspect)
