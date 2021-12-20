@@ -1,4 +1,4 @@
-# NLP_Heroku_Deployment
+# Deployment
 
 ## Heroku Deplyement
 https://mohsinaliapi.herokuapp.com/ 
